@@ -79,7 +79,6 @@ if __name__=="__main__":
     # Initialize video capture
     cap = cv2.VideoCapture(0, cv2.CAP_AVFOUNDATION)
     fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
-    out = cv2.VideoWriter('output.mp4', fourcc, 30.0, (1920, 1080))
 
     # Model hyperparameters
     input_size = 64
@@ -160,5 +159,4 @@ if __name__=="__main__":
 
     # Release the camera and file writer
     cap.release()
-    out.release()
     cv2.destroyAllWindows()
