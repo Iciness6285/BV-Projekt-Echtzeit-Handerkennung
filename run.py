@@ -21,7 +21,6 @@ def extract_data(image):
             result[idx] = landmark.x
             result[idx + 1] = landmark.y
             result[idx + 2] = landmark.z
-    
     return result
 
 def on_input(label):
@@ -65,6 +64,7 @@ class RNNClassifier(nn.Module):
         out, _ = self.lstm(x, (h0, c0))
         out = self.fc(self.dropout(out[:, -1, :]))
         return out
+
 
 if __name__=="__main__":
     # Use MediaPipe to draw the hand framework over the top of hands it identifies
@@ -111,15 +111,12 @@ if __name__=="__main__":
     row_arr = []            # Stores the coordinates of the previous frames
     n = 16                  # Number of frames for prediction
     last_prediction = []    # Stores the labels of the previous frames
-
-    row_arr = []
-    counter, ct = 0, 0
-    frame_counter = 0
+    frame_counter, counter = 0, 0
 
     while cap.isOpened():
         frame_counter += 1
-        counter += 1
         frame_start = time.time()
+        counter += 1
 
         ret, frame = cap.read()
         row_arr.extend(extract_data(frame))
@@ -140,22 +137,23 @@ if __name__=="__main__":
                 cv2.putText(frame, str(label_dict[label]), (50, 150), cv2.FONT_HERSHEY_SIMPLEX, 3, 255, thickness=5)
                 last_prediction = str(label_dict[label])
             
-            cv2.imshow("Frame", frame) # 0.005
-            key = cv2.waitKey(1) & 0xFF
-            if key == ord("q"):
-                break
+                # uncomment following lines to get mouse movement
+                if label and (label == 2 or label == 3 or label == 4 or label == 5):
+                    on_input(label)
+                elif label and (label == 1 or label == 8 or label == 9):
+                    if frame_counter%10 == 0:
+                        on_input(label)
 
             if frame_counter %10 == 0:
                 print(f"FPS: {1.0 / (time.time() - frame_start):.2f}")
                 print(last_prediction)
                 print()
+            cv2.putText(frame, f"FPS: {1.0 / (time.time() - frame_start):.2f}", (1700, 1040), cv2.FONT_HERSHEY_SIMPLEX, 1, 255, thickness=3)
 
-            # # uncomment following lines to get mouse movement
-            # if label and (label == 2 or label == 3 or label == 4 or label == 5):
-            #     on_input(label)
-            # elif label and (label == 1 or label == 8 or label == 9):
-            #     if frame_counter%10 == 0:
-            #         on_input(label)
+        cv2.imshow("Frame", frame) # 0.005
+        key = cv2.waitKey(1) & 0xFF
+        if key == ord("q"):
+            break
 
     # Release the camera and file writer
     cap.release()
