@@ -91,7 +91,7 @@ if __name__=="__main__":
     model = RNNClassifier(input_size, hidden_size, num_layers, num_classes, dropout)
     device = torch.device('mps') if torch.backends.mps.is_available() else torch.device('cpu')
     print(device)
-    model.load_state_dict(torch.load('final_mit0.pth', map_location=device))
+    model.load_state_dict(torch.load('final_model.pth', map_location=device))
     model.to(device)
     model.eval()
 
